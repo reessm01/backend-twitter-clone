@@ -1,0 +1,14 @@
+{% extends 'base.html' %} 
+{% load crispy_forms_tags %} 
+{% block content %}
+<div class="card">
+    {% for tweet in tweet_list %}
+    <div class="card-body p-3 pl-4 pr-4">
+        <blockquote class="blockquote mb-0">
+            <p>{{ tweet.text }}</p>
+            <footer class="blockquote-footer"><cite title="Source Title">{{tweet.author}}</cite></footer>
+        </blockquote>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
