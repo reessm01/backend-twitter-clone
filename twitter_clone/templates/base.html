@@ -15,15 +15,15 @@
     <title>Twitter Clone</title>
   </head>
   <body>
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-8">
-          <h1 class="mt-2">Twitter</h1>
-          <hr class="mt-0 mb-4" />
-          {% block content %} 
-          {% endblock %}
-        </div>
-      </div>
+    {% include "navbar.html" %}
+    <div class="container-fluid">
+    <div class="row justify-content-center">
+    <div class="col-8">
+        <hr class="mt-0 mb-4" />
+        {% block content %} 
+        {% endblock %}
+    </div>
+    </div>
     </div>
   </body>
 </html>
