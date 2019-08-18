@@ -10,6 +10,7 @@ autopep8 = "*"
 django = "*"
 django-crispy-forms = "*"
 datetime = "*"
+django-bootstrap4 = "*"
 
 [requires]
 python_version = "3.7"

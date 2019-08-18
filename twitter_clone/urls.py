@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from twitter_clone.auth.urls import url_patterns as auth_urls
 from twitter_clone.TwitterUser.urls import url_patterns as TwitterUser_urls
@@ -32,3 +34,6 @@ urlpatterns += auth_urls
 urlpatterns += TwitterUser_urls
 urlpatterns += Tweet_urls
 urlpatterns += Notification_urls
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

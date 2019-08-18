@@ -5,6 +5,8 @@ from django.db.models import Q
 from twitter_clone.TwitterUser.models import TwitterUser
 from twitter_clone.Tweet.models import Tweet
 from twitter_clone.Tweet.forms import NewTweetForm
+from twitter_clone.Notifications.views import get_notifications
+from twitter_clone.Notifications.models import Notifications
 
 @login_required
 def homepage(request, *args, **kwargs):
@@ -14,6 +16,7 @@ def homepage(request, *args, **kwargs):
         form = NewTweetForm()
         button_label = 'Submit'
         _TwitterUser = TwitterUser.objects.get(user=u)
+        _Notifications = get_notifications(_TwitterUser)
         tweet_list = []
         query = Q()
         query = query | Q(author=_TwitterUser)
@@ -22,4 +25,4 @@ def homepage(request, *args, **kwargs):
                 query = query | Q(author=person)
         tweet_list = Tweet.objects.filter(query).order_by('-created_at')
         
-        return render(request, page, {'form': form, 'tweet_list': tweet_list, 'button_label': button_label})
+        return render(request, page, {'user': u, 'form': form, 'tweet_list': tweet_list, 'button_label': button_label, 'notifications': _Notifications})

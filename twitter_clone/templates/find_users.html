@@ -1,0 +1,31 @@
+{% extends 'base.html' %} {% load crispy_forms_tags %} {% block content %}
+
+<div class="container-fluid">
+    <div class="list-group">
+    <h1 class="mb-5">Tweeters:</h1>
+        {% for person in user_list %}
+            <a 
+                class="list-group-item list-group-item-action" 
+                href="/profile/?username={{person.user.username}}"
+            >
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ person.user.username }}</h5>
+                    {% if person in logged_in_user.following.all and person != logged_in_user %}
+                        <button type="button" class="btn btn-primary">Following</button>
+                    {% elif person not in logged_in_user.following.all and person != logged_in_user %}
+                        <button type="button" class="btn btn-outline-primary">Follow</button>
+                    {% else %}
+                        <button class="btn btn-outline-secondary" disabled>Follow</button>
+                    {% endif %}
+                </div>
+                {% if person.headline %}
+                    <p class="mb-1">{{ person.headline }}</p>
+                {% else%}
+                    <p class="mb-1">No headline.</p>
+                {% endif %}
+            </a>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

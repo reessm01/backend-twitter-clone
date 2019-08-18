@@ -1,0 +1,24 @@
+{% extends 'base.html' %} 
+{% load crispy_forms_tags %} 
+{% block content %}
+    {% for item in all_notifications %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <div class="d-flex flex-row justify-content-between mb-2">
+                {% if item.seen is False  %}
+                    <h5><a href="/profile/?username={{item.mentions.all.0.author}}">@{{item.mentions.all.0.author}}</a> mentioned you</h5>
+                    <h4 class="d-flex align-items-center" ><span class="badge badge-primary"><a class="text-light" href="/tweet/?id={{item.mentions.all.0.id}}">New</a></span></h4>
+                {% else %}
+                    <h5><a href="/profile/?username={{item.mentions.all.0.author}}">@{{item.mentions.all.0.author}}</a> mentioned you</h5>
+                    <a href="/tweet/?id={{item.mentions.all.0.id}}">{{item.mentions.all.0.created_at}}</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="card-text">
+                <p>{{ item.mentions.all.0.text }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
