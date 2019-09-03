@@ -1,0 +1,167 @@
+sreese=# CREATE TABLE u(
+sreese(# id SERIAL NOT NULL PRIMARY KEY,
+sreese(# username VARCHAR(40) NOT NULL,
+sreese(# password VARCHAR(24) NOT NULL
+sreese(# );
+CREATE TABLE
+
+sreese=# CREATE TABLE twitteruser(
+sreese(# id SERIAL NOT NULL PRIMARY KEY,
+sreese(# user_id INTEGER,
+sreese(# FOREIGN KEY (user_id) REFERENCES u (id)
+sreese(# );
+CREATE TABLE
+
+sreese=# CREATE TABLE tweet(
+sreese(# id SERIAL NOT NULL PRIMARY KEY,
+sreese(# text VARCHAR(140) NOT NULL,
+sreese(# twitteruser_id INTEGER,
+sreese(# FOREIGN KEY (twitteruser_id) REFERENCES twitteruser (id)
+sreese(# );
+CREATE TABLE
+
+sreese=# CREATE TABLE notifications(
+sreese(#     id SERIAL NOT NULL PRIMARY KEY,
+sreese(#     seen BOOLEAN DEFAULT FALSE,
+sreese(#     tweet_id INTEGER,
+sreese(#     twitteruser_id INTEGER,
+sreese(#     FOREIGN KEY (tweet_id) REFERENCES tweet (id),
+sreese(#     FOREIGN KEY (twitteruser_id) REFERENCES twitteruser (id)
+sreese(# );
+CREATE TABLE
+
+sreese=# INSERT INTO u (username, password) VALUES ('sreese', 'password'), ('scotty_reese', 'password');
+INSERT 0 2
+
+sreese=# SELECT * FROM u
+sreese-# ;
+id |   username   | password 
+----+--------------+----------
+1 | sreese       | password
+2 | scotty_reese | password
+(2 rows)
+
+sreese=# INSERT INTO twitteruser (user_id) VALUES ((SELECT id FROM u WHERE id='1')), ((SELECT id FROM u WHERE id='2'));
+INSERT 0 2
+
+sreese=# SELECT * FROM twitteruser;
+id | user_id 
+----+---------
+1 |       1
+2 |       2
+(2 rows)
+
+sreese=# INSERT INTO tweet (text, twitteruser_id) VALUES ('tweet tweet mofo',(SELECT id FROM twitteruser WHERE id='1'));
+INSERT 0 1
+
+sreese=# INSERT INTO tweet (text, twitteruser_id) VALUES ('sup dawgs',(SELECT id FROM twitteruser WHERE id='2'));
+INSERT 0 1
+sreese=# SELECT * FROM tweet;
+id |       text       | twitteruser_id 
+----+------------------+----------------
+1 | tweet tweet mofo |              1
+2 | sup dawgs        |              2
+(2 rows)
+
+sreese=# SELECT COUNT(*)
+sreese-# FROM (SELECT * FROM u INNER JOIN tweet ON u.id = tweet.twitteruser_id) AS tweets
+sreese-# WHERE username='sreese';
+count 
+-------
+    1
+(1 row)
+
+sreese=# ALTER TABLE tweet ADD COLUMN created TIMESTAMPTZ NOT NULL DEFAULT NOW();
+ALTER TABLE
+
+sreese=# SELECT * FROM tweet;
+id |       text       | twitteruser_id |            created            
+----+------------------+----------------+-------------------------------
+1 | tweet tweet mofo |              1 | 2019-08-28 12:48:53.179525-04
+2 | sup dawgs        |              2 | 2019-08-28 12:48:53.179525-04
+(2 rows)
+
+sreese=# SELECT text, created FROM tweet 
+sreese-# INNER JOIN twitteruser ON tweet.twitteruser_id = twitteruser.id 
+sreese-# INNER JOIN u ON twitteruser.user_id = u.id
+sreese-# WHERE username='sreese';
+    text       |            created            
+------------------+-------------------------------
+tweet tweet mofo | 2019-08-28 12:48:53.179525-04
+(1 row)
+
+sreese=# SELECT * FROM u
+sreese-# WHERE username='sreese';
+id | username | password 
+----+----------+----------
+1 | sreese   | password
+(1 row)
+
+sreese=# INSERT INTO tweet (text, twitteruser_id) 
+sreese-# VALUES ('tweet insert via username instead of id',(
+sreese(#     SELECT id FROM u
+sreese(#     WHERE username='sreese'
+sreese(#     ));
+INSERT 0 1
+
+sreese=# SELECT * FROM tweet;
+id |                  text                   | twitteruser_id |            created            
+----+-----------------------------------------+----------------+-------------------------------
+1 | tweet tweet mofo                        |              1 | 2019-08-28 12:48:53.179525-04
+2 | sup dawgs                               |              2 | 2019-08-28 12:48:53.179525-04
+3 | tweet insert via username instead of id |              1 | 2019-08-28 13:21:09.62107-04
+(3 rows)
+
+sreese=# INSERT INTO notifications (tweet_id, twitteruser_id)
+sreese-# VALUES (1, 1), (3, 1);
+INSERT 0 2
+
+sreese=# SELECT notes.id FROM notifications notes
+sreese-# INNER JOIN twitteruser ON notes.twitteruser_id = twitteruser.user_id
+sreese-# INNER JOIN u on twitteruser.user_id = u.id
+sreese-# WHERE username='sreese';
+id 
+----
+4
+3
+(2 rows)
+
+sreese=# SELECT username FROM u
+sreese-# INNER JOIN twitteruser ON u.id = twitteruser.user_id
+sreese-# INNER JOIN notifications notes ON twitteruser.user_id = notes.twitteruser_id
+sreese-# WHERE notes.id = 3;
+username 
+----------
+sreese
+(1 row)
+
+sreese=# SELECT username from u
+sreese-# INNER JOIN tweet ON u.id = tweet.twitteruser_id
+sreese-# INNER JOIN notifications notes ON tweet.id = notes.tweet_id
+sreese-# WHERE notes.id = 5;
+username 
+----------
+sreese
+(1 row)
+sreese=# SELECT * FROM notifications;
+id | seen | tweet_id | twitteruser_id 
+----+------+----------+----------------
+3 | f    |        1 |              1
+4 | f    |        3 |              1
+5 | f    |        4 |              2
+(3 rows)
+sreese=# SELECT * FROM tweet;
+id |                  text                   | twitteruser_id |            created            
+----+-----------------------------------------+----------------+-------------------------------
+1 | tweet tweet mofo                        |              1 | 2019-08-28 12:48:53.179525-04
+2 | sup dawgs                               |              2 | 2019-08-28 12:48:53.179525-04
+3 | tweet insert via username instead of id |              1 | 2019-08-28 13:21:09.62107-04
+4 | @scotty_reese sup dawg                  |              1 | 2019-08-28 14:00:20.37627-04
+(4 rows)
+
+sreese=# SELECT text FROM tweet
+sreese-# WHERE id = 1;
+    text       
+------------------
+tweet tweet mofo
+(1 row)
