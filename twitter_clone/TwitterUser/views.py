@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, reverse, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.views.generic import TemplateView
 
 from twitter_clone.TwitterUser.forms import EditHeadlineForm
 
@@ -53,11 +54,8 @@ def user_profile(request, *args, **kwargs):
 
             return render(request, page, {'message':message, 'form': form, 'user': u, 'TwitterUser': _TwitterUser, 'tweet_list': tweet_list, 'is_following': is_following})
 
-            
-
-@login_required
-def follow(request, *args, **kwargs):
-    if request.method == 'GET':
+class Follow(TemplateView):
+    def get(self, request, *args, **kwargs):
         _TwitterUser = request.user.twitteruser
         name = request.GET.get('username')
         u=User.objects.get(username=name)
@@ -66,9 +64,9 @@ def follow(request, *args, **kwargs):
         if user_to_follow not in _TwitterUser.following.all():
             _TwitterUser.following.add(user_to_follow)
             user_to_follow.followers.add(_TwitterUser)
-        return HttpResponseRedirect(f'/profile/?username={user_to_follow.user.username}')
-    else:
-        return HttpResponseRedirect(reverse('homepage'))
+            return HttpResponseRedirect(f'/profile/?username={user_to_follow.user.username}')
+        else:
+            return HttpResponseRedirect(reverse('homepage'))
 
 @login_required
 def unfollow(request, *args, **kwargs):

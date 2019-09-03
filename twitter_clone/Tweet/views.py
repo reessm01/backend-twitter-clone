@@ -4,6 +4,7 @@ from django.shortcuts import render, HttpResponseRedirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.views.generic import TemplateView
 
 from twitter_clone.Tweet.forms import NewTweetForm
 
@@ -33,8 +34,8 @@ def new_tweet(request, *args, **kwargs):
 
             return HttpResponseRedirect(reverse('homepage'))
 
-def tweet(request, *args, **kwargs):
-    if request.method == 'GET':
+class ATweet(TemplateView):
+    def get(self, request, *args, **kwargs):
         id = request.GET.get('id')
         tweet = Tweet.objects.get(id=id)
         page = 'single_tweet.html'
