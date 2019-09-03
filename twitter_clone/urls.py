@@ -22,12 +22,13 @@ from twitter_clone.auth.urls import url_patterns as auth_urls
 from twitter_clone.TwitterUser.urls import url_patterns as TwitterUser_urls
 from twitter_clone.Tweet.urls import url_patterns as Tweet_urls
 from twitter_clone.Notifications.urls import url_patterns as Notification_urls
+from django.contrib.auth.decorators import login_required
 
-from twitter_clone.views import homepage
+from twitter_clone.views import HomePage
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', homepage, name='homepage')
+    path('', login_required(HomePage.as_view()), name='homepage')
 ]
 
 urlpatterns += auth_urls
